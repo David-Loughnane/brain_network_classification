@@ -7,7 +7,7 @@ parcels_source_left = scipy.io.loadmat('100307_aparc_a2009s_L.mat')
 
 parcels = load_parcels_left['aparc'] #+ load_parcels_right['aparc']
 
-
+#### LOAD STRUCTURAL TIME SERIES ####
 
 
 #### LOAD FUNCTIONAL TIME SERIES ####
