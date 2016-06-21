@@ -1,43 +1,48 @@
 import scipy.io
 import numpy as np
 
+
+''' DESTRIEUX PARCELLATION MAPPING '''
+parcels_source_left = scipy.io.loadmat('../data/HCP100/100307/processed/100307_aparc_a2009s_L.mat')
+#parcels_source_right = scipy.io.loadmat('../data/HCP100/processed/100307_aparc_a2009s_R.mat')
+
+parcels = parcels_source_left['aparc'] #+ parcels_source_right['aparc']
+parcels_array = np.array(parcels)
+
 ''' CORTICAL SURFACE MASK '''
 surface_voxel_source_left = scipy.io.loadmat('../data/HCP100/100307/processed/100307_atlasroi_L.mat')
 #surface_voxel_source_right = scipy.io.loadmat('../data/HCP100/100307/processed/100307_atlasroi_R.mat')
 
 surface_mask = surface_voxel_source_left['cdata'] # + surface_voxel_source_right['cdata']
 
-
-limit = 10000000 
+limit = 1000
 edges = []
-
 with open('../data/HCP100/100307/diffusion/preprocessed/T1w/probtrack/L/fdt_matrix1.dot', 'r') as f:
-	#for line in f:
 	for _, line in zip(range(limit), f):
 		edge = line.split()
-		if surface_mask[int(edge[0])-1][0] != 1.0 or surface_mask[int(edge[1])-1][0] != 1.0:
+		if surface_mask[int(edge[0])-1][0] == 1 and surface_mask[int(edge[1])-1][0] == 1:
 			edges.append(edge)
-
 struct_matrix = np.array(edges)
-
-'''
-edges_masked = []
-
-i = 0
-for row in struct_matrix:
-	if surface_mask[int(row[0])-1][0] != 1.0 or surface_mask[int(row[1])-1][0] != 1.0:
-		edges_masked.append(row)
-'''
-
 print struct_matrix.shape
-print struct_matrix
 
+struct_matrix_parcels = []
+for row in struct_matrix:
+	print (parcels_array[int(row[0])-1][0], parcels_array[int(row[1])-1][0], row[2])
+	struct_matrix_parcels.append((parcels_array[int(row[0])-1][0], parcels_array[int(row[1])-1][0], row[2]))
 
+struct_np_matrix_parcels = np.array(struct_matrix_parcels)
+print struct_np_matrix_parcels
 
+compact_matrix = []
+for i in range(72):
+	for j in range(72):
+		compact_matrix.append([i,j,int(0)])
+compact_np_matrix = np.array(compact_matrix)	
 
-''' DIFFUSION DATA '''
-'''
-for _ in np.nditer(surface_mask):
-	if _ != 1.0:
-		i += 1
-'''
+print compact_np_matrix
+
+for row in struct_np_matrix_parcels:
+	print (int(row[0])-1)+((int(row[1])-1)*72)
+	#compact_np_matrix[(int(row[0])-1)+((int(row[1])-1)*72)][2] += int(row[2])
+
+#print compact_np_matrix
