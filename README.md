@@ -1,2 +1,2 @@
 # brain_network_classification
-Masters Thesis - Classification of Brain Networks generated from HCP
+Masters Thesis - Application of Machine Learning to classify functional and structural brain networks generated from HCP data
