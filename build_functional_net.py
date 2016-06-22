@@ -11,7 +11,7 @@ NUM_SUBJECTS = 100
 
 
 subjectIDs = []
-with open("../data/HCP100/subjectIDs.txt", "r") as f:
+with open("/vol/vipdata/data/HCP100/subjectIDs100.txt", "r") as f:
 	for line in f:
 		subjectIDs.append(line.rstrip('\n'))
 
@@ -20,8 +20,8 @@ feature_vector = np.zeros((NUM_SUBJECTS,(PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)), dtyp
 for subject in range(5):#len(subjectIDs)):
 
 	''' DESTRIEUX PARCELLATION MAPPING '''
-	parcels_source_left = scipy.io.loadmat('../data/HCP100/{0}/processed/{0}_aparc_a2009s_L.mat'.format(subjectIDs[subject]))
-	parcels_source_right = scipy.io.loadmat('../data/HCP100/{0}/processed/{0}_aparc_a2009s_L.mat'.format(subjectIDs[subject]))
+	parcels_source_left = scipy.io.loadmat('/vol/vipdata/data/HCP100/{0}/processed/{0}_aparc_a2009s_L.mat'.format(subjectIDs[subject]))
+	parcels_source_right = scipy.io.loadmat('/vol/vipdata/data/HCP100/{0}/processed/{0}_aparc_a2009s_L.mat'.format(subjectIDs[subject]))
 	parcels = np.array(parcels_source_left['aparc']) #+ parcels_source_right['aparc'])
 
 
@@ -44,8 +44,8 @@ for subject in range(5):#len(subjectIDs)):
 
 
 	''' FUNCTIONAL TIME SERIES '''
-	functional_ts_source_left = scipy.io.loadmat('../data/HCP100/{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat'.format(subjectIDs[subject]))
-	functional_ts_source_right = scipy.io.loadmat('../data/HCP100/{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat'.format(subjectIDs[subject]))
+	functional_ts_source_left = scipy.io.loadmat('/vol/vipdata/data/HCP100/{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat'.format(subjectIDs[subject]))
+	functional_ts_source_right = scipy.io.loadmat('/vol/vipdata/data/HCP100/{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat'.format(subjectIDs[subject]))
 	vxl_func_ts = np.array(functional_ts_source_left['dtseries1']) #+ functional_ts_source_right['dtseries1'])
 
 	# add voxels BOLD ts to parcel TS
