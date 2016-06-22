@@ -27,22 +27,22 @@ print struct_matrix.shape
 
 struct_matrix_parcels = []
 for row in struct_matrix:
-	print (parcels_array[int(row[0])-1][0], parcels_array[int(row[1])-1][0], row[2])
+	#print (parcels_array[int(row[0])-1][0], parcels_array[int(row[1])-1][0], row[2])
 	struct_matrix_parcels.append((parcels_array[int(row[0])-1][0], parcels_array[int(row[1])-1][0], row[2]))
 
 struct_np_matrix_parcels = np.array(struct_matrix_parcels)
-print struct_np_matrix_parcels
+#print struct_np_matrix_parcels
 
 compact_matrix = []
-for i in range(72):
-	for j in range(72):
+for i in range(75):
+	for j in range(75):
 		compact_matrix.append([i,j,int(0)])
 compact_np_matrix = np.array(compact_matrix)	
 
-print compact_np_matrix
+#print compact_np_matrix
 
 for row in struct_np_matrix_parcels:
-	print (int(row[0])-1)+((int(row[1])-1)*72)
+	#print (int(row[0])-1)+((int(row[1])-1)*72)
 	#compact_np_matrix[(int(row[0])-1)+((int(row[1])-1)*72)][2] += int(row[2])
 
 #print compact_np_matrix
