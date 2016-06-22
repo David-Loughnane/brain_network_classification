@@ -80,16 +80,12 @@ for subject in range(NUM_SUBJECTS):#len(subjectIDs)):
 			max_correl = c
 		elif c < min_correl:
 			min_correl = c
-
-	print 'FUNCTIONAL TIME SERIES BY PARCEL'
-	print parcel_func_ts
-	print '\n'
+			
 
 	print 'FUNCTIONAL CORRELATION MATRIX'
 	print "min: ", min_correl
 	print "max: ", max_correl
 	print "zeros: ", zero_count
-	print func_corr.shape
 	print func_corr
 	print '\n'
 
