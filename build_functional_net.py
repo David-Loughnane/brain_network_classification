@@ -4,8 +4,8 @@ import numpy as np
 
 
 
-VOXEL_TOTAL = 29696 #* 2
-PARCEL_TOTAL = 76 #* 2
+VOXEL_TOTAL = 29696 * 2
+PARCEL_TOTAL = 76 * 2
 TS_LENGTH = 2400
 NUM_SUBJECTS = 100
 
@@ -19,12 +19,12 @@ with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
 
 feature_vector = np.zeros((NUM_SUBJECTS,(PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)), dtype=np.float)
 
-for subject in range(5):#len(subjectIDs)):
+for subject in range(1):#len(subjectIDs)):
 
 	''' DESTRIEUX PARCELLATION MAPPING '''
 	parcels_source_left = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_L.mat".format(subjectIDs[subject]))
-	parcels_source_right = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_L.mat".format(subjectIDs[subject]))
-	parcels = np.array(parcels_source_left['aparc']) #+ parcels_source_right['aparc'])
+	parcels_source_right = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_R.mat".format(subjectIDs[subject]))
+	parcels = np.array(parcels_source_left['aparc'] + parcels_source_right['aparc'])
 
 
 	# number of voxels assigned to each parcel
@@ -47,8 +47,8 @@ for subject in range(5):#len(subjectIDs)):
 
 	''' FUNCTIONAL TIME SERIES '''
 	functional_ts_source_left = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat".format(subjectIDs[subject]))
-	functional_ts_source_right = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat".format(subjectIDs[subject]))
-	vxl_func_ts = np.array(functional_ts_source_left['dtseries1']) #+ functional_ts_source_right['dtseries1'])
+	functional_ts_source_right = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_R.mat".format(subjectIDs[subject]))
+	vxl_func_ts = np.array(functional_ts_source_left['dtseries1'] + functional_ts_source_right['dtseries1'])
 
 	# add voxels BOLD ts to parcel TS
 	parcel_func_ts = np.zeros((PARCEL_TOTAL, TS_LENGTH), dtype=np.float)
@@ -81,16 +81,14 @@ for subject in range(5):#len(subjectIDs)):
 		elif c < min_correl:
 			min_correl = c
 
-	print "min: ", min_correl
-	print "max: ", max_correl
-	print "zeros: ", zero_count
-
-
 	print 'FUNCTIONAL TIME SERIES BY PARCEL'
 	print parcel_func_ts
 	print '\n'
 
 	print 'FUNCTIONAL CORRELATION MATRIX'
+	print "min: ", min_correl
+	print "max: ", max_correl
+	print "zeros: ", zero_count
 	print func_corr.shape
 	print func_corr
 	print '\n'
