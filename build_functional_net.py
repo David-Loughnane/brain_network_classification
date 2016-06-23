@@ -1,7 +1,7 @@
 import os
 import scipy.io 
 import numpy as np
-
+import csv
 
 
 VOXEL_TOTAL = 29696 #* 2
@@ -11,6 +11,11 @@ NUM_SUBJECTS = 100
 
 FILE_PATH = "/vol/vipdata/data/HCP100/"
 
+class_labels = []
+with open ('../class_labels.csv', 'r') as f:
+	reader = csv.reader(f)
+	class_labels = list(reader)
+print class_labels
 
 subjectIDs = []
 with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
@@ -19,7 +24,7 @@ with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
 
 feature_vector = np.zeros((NUM_SUBJECTS,(PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)), dtype=np.float)
 
-for subject in range(NUM_SUBJECTS):#len(subjectIDs)):
+for subject in range(1):#len(subjectIDs)):
 
 	''' DESTRIEUX PARCELLATION MAPPING '''
 	parcels_source_left = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_L.mat".format(subjectIDs[subject]))
@@ -80,9 +85,9 @@ for subject in range(NUM_SUBJECTS):#len(subjectIDs)):
 			max_correl = c
 		elif c < min_correl:
 			min_correl = c
-			
 
-	print 'FUNCTIONAL CORRELATION MATRIX'
+
+	print 'FUNCTIONAL CORRELATION MATRIX: ' + subject
 	print "min: ", min_correl
 	print "max: ", max_correl
 	print "zeros: ", zero_count
