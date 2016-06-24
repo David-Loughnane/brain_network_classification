@@ -4,18 +4,20 @@ import numpy as np
 import csv
 
 
+
 VOXEL_TOTAL = 29696 #* 2
 PARCEL_TOTAL = 76 #* 2
 TS_LENGTH = 2400
 NUM_SUBJECTS = 100
 
-FILE_PATH = "/vol/vipdata/data/HCP100/"
+#FILE_PATH = "/vol/vipdata/data/HCP100/"
+FILE_PATH = "../data/HCP100/"
 
-class_labels = []
-with open ('../class_labels.csv', 'r') as f:
-	reader = csv.reader(f)
-	class_labels = list(reader)
-print class_labels
+subject_attribs = np.genfromtxt('../data/class_labels.csv', delimiter=',', dtype = str, skip_header = 1)
+
+print subject_attribs.shape
+print subject_attribs
+
 
 subjectIDs = []
 with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
@@ -28,7 +30,7 @@ for subject in range(1):#len(subjectIDs)):
 
 	''' DESTRIEUX PARCELLATION MAPPING '''
 	parcels_source_left = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_L.mat".format(subjectIDs[subject]))
-	parcels_source_right = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_R.mat".format(subjectIDs[subject]))
+	#parcels_source_right = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_R.mat".format(subjectIDs[subject]))
 	parcels = np.array(parcels_source_left['aparc']) #+ parcels_source_right['aparc'])
 
 
@@ -52,7 +54,7 @@ for subject in range(1):#len(subjectIDs)):
 
 	''' FUNCTIONAL TIME SERIES '''
 	functional_ts_source_left = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat".format(subjectIDs[subject]))
-	functional_ts_source_right = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat".format(subjectIDs[subject]))
+	#functional_ts_source_right = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_L.mat".format(subjectIDs[subject]))
 	vxl_func_ts = np.array(functional_ts_source_left['dtseries1']) #+ functional_ts_source_right['dtseries1'])
 
 	# add voxels BOLD ts to parcel TS
@@ -87,7 +89,7 @@ for subject in range(1):#len(subjectIDs)):
 			min_correl = c
 
 
-	print 'FUNCTIONAL CORRELATION MATRIX: ' + subject
+	print 'FUNCTIONAL CORRELATION MATRIX: ' + str(subject)
 	print "min: ", min_correl
 	print "max: ", max_correl
 	print "zeros: ", zero_count
