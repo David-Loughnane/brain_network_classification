@@ -2,25 +2,12 @@ import os
 import scipy.io 
 import numpy as np
 import csv
-from sklearn.cross_validation import train_test_split
 
 
 VOXEL_TOTAL = 29696 #* 2
 PARCEL_TOTAL = 76 #* 2
 TS_LENGTH = 2400
 NUM_SUBJECTS = 100
-
-
-
-''' GENDER LABLELS '''
-subject_attribs = np.genfromtxt('class_labels.csv', delimiter=',', dtype = str, skip_header = 1)
-
-labels_gender = []
-for row in subject_attribs:
-	if row[3] == 'F':
-		labels_gender.append(-1)
-	else:
-		labels_gender.append( 1)
 
 
 #FILE_PATH = "/vol/vipdata/data/HCP100/"
@@ -33,7 +20,7 @@ with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
 
 feature_vector = np.zeros((NUM_SUBJECTS,(PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)), dtype=np.float)
 
-for subject in range(len(subjectIDs)):
+for subject in range(1):#range(len(subjectIDs)):
 
 	''' DESTRIEUX PARCELLATION MAPPING '''
 	parcels_source_left = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_L.mat".format(subjectIDs[subject]))
@@ -84,6 +71,7 @@ for subject in range(len(subjectIDs)):
 			for k in range(j+1, PARCEL_TOTAL):
 				feature_vector[subject][j] = func_corr[j][k]
 
+	'''
 	max_correl = -9999
 	min_correl = 9999
 	zero_count = 0
@@ -95,24 +83,20 @@ for subject in range(len(subjectIDs)):
 		elif c < min_correl:
 			min_correl = c
 
-
 	print('FUNCTIONAL CORRELATION MATRIX: ' + str(subject))
 	print("min: ", min_correl)
 	print("max: ", max_correl)
 	print("zeros: ", zero_count)
 	print(func_corr)
 	print('\n')
-
+	'''
 
 print('FUNCTIONAL CORRELATION FEATURE VECTOR')
+print(type(feature_vector))
 print(feature_vector.shape)
-print(feature_vector)
+np.savetxt('test.txt', feature_vector)
 
-features_train, features_test, labels_train, labels_test = train_test_split(feature_vector, labels_gender, test_size=0.1, random_state=42)
-print(len(features_train[0]))
-print(len(features_test))
-print(len(labels_train))
-print(len(labels_test))
+
 
 
 
