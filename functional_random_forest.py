@@ -7,7 +7,7 @@ import numpy as np
 from sklearn import ensemble
 from sklearn import tree
 from sklearn.cross_validation import train_test_split
-
+from sklearn import metrics
 
 ''' LOAD FEATURE VECTOR'''
 loaded_features = np.loadtxt('test.txt')
@@ -26,21 +26,12 @@ for row in subject_attribs:
 ''' TRAIN/TEST SPLIT'''
 features_train, features_test, labels_train, labels_test = train_test_split(loaded_features, labels_gender, test_size=0.1, random_state=42)
 
-for sample in features_test:
-	for feature in sample:
-		if math.isnan(feature):
-			print(sample)
-
-
-
 print("Memory usage before: {}MB".format(memory_usage()))
-
 
 print("features: ", len(features_train))
 
 #### INSTANTIATE CLASSIFIER ####
 ABclassifier = ensemble.AdaBoostClassifier(n_estimators=50, base_estimator=tree.DecisionTreeClassifier(criterion="entropy", min_samples_split=100, max_depth=20))
-
 
 
 #### TRAIN #####
@@ -56,9 +47,9 @@ print(ABclassifier.estimators_[0])
 t0 = time()
 ABprediction = ABclassifier.predict(features_test)
 t1 = time()
-'''
+
 print("Prediction time: {} seconds".format(round(t1-t0,3)))
 print("Prediciton accuracy: {:.2%}".format(metrics.accuracy_score(labels_test, ABprediction)))
-'''
+
 
 print("Memory usage after: {}MB".format(memory_usage()))

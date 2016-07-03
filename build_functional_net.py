@@ -10,8 +10,8 @@ TS_LENGTH = 2400
 NUM_SUBJECTS = 100
 
 
-#FILE_PATH = "/vol/vipdata/data/HCP100/"
-FILE_PATH = "../data/HCP100/"
+FILE_PATH = "/vol/vipdata/data/HCP100/"
+#FILE_PATH = "../data/HCP100/"
 
 subjectIDs = []
 with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
@@ -20,7 +20,7 @@ with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
 
 feature_vector = np.zeros((NUM_SUBJECTS,(PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)), dtype=np.float)
 
-for subject in range(1):#range(len(subjectIDs)):
+for subject in range(len(subjectIDs)):
 
 	''' DESTRIEUX PARCELLATION MAPPING '''
 	parcels_source_left = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_L.mat".format(subjectIDs[subject]))
@@ -64,6 +64,7 @@ for subject in range(1):#range(len(subjectIDs)):
 
 	# functional correlation matrix
 	func_corr = np.corrcoef(parcel_func_ts)
+        func_corr = np.nan_to_num(func_corr)
 
 	# extract upper right hand corner of correlation matrix
 	for i in range((PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)):
@@ -94,7 +95,7 @@ for subject in range(1):#range(len(subjectIDs)):
 print('FUNCTIONAL CORRELATION FEATURE VECTOR')
 print(type(feature_vector))
 print(feature_vector.shape)
-np.savetxt('test.txt', feature_vector)
+np.savetxt('functional_net.txt', feature_vector)
 
 
 
