@@ -11,7 +11,7 @@ from sklearn import metrics
 
 ''' LOAD FEATURE VECTOR'''
 loaded_features = np.loadtxt('functional_features_vector.txt')
-
+print("Size of feature vector: ", loaded_features.shape)
 
 ''' GENDER LABLELS '''
 subject_attribs = np.genfromtxt('class_labels.csv', delimiter=',', dtype = str, skip_header = 1)
