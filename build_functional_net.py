@@ -6,7 +6,8 @@ import csv
 
 VOXEL_TOTAL_L = 29696
 VOXEL_TOTAL_R = 29716
-PARCEL_TOTAL = 76 #* 2
+HEMIS_PARCELS = 76
+BRAIN_PARCELS = HEMIS_PARCELS*2
 TS_LENGTH = 2400
 NUM_SUBJECTS = 100
 
@@ -19,7 +20,7 @@ with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
 	for line in f:
 		subjectIDs.append(line.rstrip('\n'))
 
-feature_vector = np.zeros((NUM_SUBJECTS,(PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)), dtype=np.float)
+feature_vector = np.zeros((NUM_SUBJECTS,(BRAIN_PARCELS*(BRAIN_PARCELS-1)/2)), dtype=np.float)
 
 
 def functional_parcellation_mapping(subject, hemisphere):
@@ -29,7 +30,7 @@ def functional_parcellation_mapping(subject, hemisphere):
 
 	# number of voxels assigned to each parcel to calculate average
 	parcel_count_list = []
-	for i in range (PARCEL_TOTAL):
+	for i in range (HEMIS_PARCELS):
 		parcel_count_list.append([i,0])
 	parcel_count = np.array(parcel_count_list)
 
@@ -41,7 +42,7 @@ def functional_parcellation_mapping(subject, hemisphere):
 	vxl_func_ts = np.array(functional_ts_source['dtseries1'])
 
 	# add voxels BOLD ts to parcel TS
-	parcel_func_ts = np.zeros((PARCEL_TOTAL, TS_LENGTH), dtype=np.float)
+	parcel_func_ts = np.zeros((HEMIS_PARCELS, TS_LENGTH), dtype=np.float)
 	
 	if hemisphere == "L":
 		for i in range(VOXEL_TOTAL_L):
@@ -53,7 +54,7 @@ def functional_parcellation_mapping(subject, hemisphere):
 			parcel_func_ts[parcel] += vxl_func_ts[i]
 
 	# average parcel TS
-	for i in range(PARCEL_TOTAL):
+	for i in range(HEMIS_PARCELS):
 		if parcel_count[i][1] != 0:
 			parcel_func_ts[i] /= parcel_count[i][1]
 
@@ -62,16 +63,17 @@ def functional_parcellation_mapping(subject, hemisphere):
 
 for subject in range(len(subjectIDs)):
 	left_parcellated_ts = functional_parcellation_mapping(subject, "L")
-	right_parcellated_ts = functional_parcellation_mapping(subject, "R")
-
+        right_parcellated_ts = functional_parcellation_mapping(subject, "R")
+        whole_brain_ts = np.concatenate((left_parcellated_ts, right_parcellated_ts), axis=0) 
+        
 	# functional correlation matrix
-	func_corr = np.corrcoef(left_parcellated_ts)
+	func_corr = np.corrcoef(whole_brain_ts)
 	func_corr = np.nan_to_num(func_corr)
 
 	# extract upper right hand corner of correlation matrix
-	for i in range((PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)):
-		for j in range(PARCEL_TOTAL):
-			for k in range(j+1, PARCEL_TOTAL):
+	for i in range((BRAIN_PARCELS*(BRAIN_PARCELS-1)/2)):
+		for j in range(BRAIN_PARCELS):
+			for k in range(j+1, BRAIN_PARCELS):
 				feature_vector[subject][j] = func_corr[j][k]
 
 	max_correl = -9999
