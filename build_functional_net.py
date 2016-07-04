@@ -23,41 +23,41 @@ feature_vector = np.zeros((NUM_SUBJECTS,(PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)), dtyp
 
 
 def functional_parcellation_mapping(subject, hemisphere):
-		''' DESTRIEUX PARCELLATION MAPPING '''
-		parcels_source = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_{1}.mat".format(subjectIDs[subject], hemisphere))
-		parcels = np.array(parcels_source['aparc'])
+	#### DESTRIEUX PARCELLATION MAPPING ####
+	parcels_source = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_{1}.mat".format(subjectIDs[subject], hemisphere))
+	parcels = np.array(parcels_source['aparc'])
 
+	# number of voxels assigned to each parcel to calculate average
+	parcel_count_list = []
+	for i in range (PARCEL_TOTAL):
+		parcel_count_list.append([i,0])
+	parcel_count = np.array(parcel_count_list)
 
-		# number of voxels assigned to each parcel
-		parcel_count_list = []
-		for i in range (PARCEL_TOTAL):
-			parcel_count_list.append([i,0])
-		parcel_count = np.array(parcel_count_list)
+	for row in parcels:
+		parcel_count[row[0]][1] += 1
 
-		for row in parcels:
-			parcel_count[row[0]][1] += 1
+	#### FUNCTIONAL TIME SERIES ####
+	functional_ts_source = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_{1}.mat".format(subjectIDs[subject], hemisphere))
+	vxl_func_ts = np.array(functional_ts_source['dtseries1'])
 
+	# add voxels BOLD ts to parcel TS
+	parcel_func_ts = np.zeros((PARCEL_TOTAL, TS_LENGTH), dtype=np.float)
+	
+	if hemisphere == "L":
+		for i in range(VOXEL_TOTAL_L):
+			parcel = parcels[i]
+			parcel_func_ts[parcel] += vxl_func_ts[i]
+	elif hemisphere == "R":
+		for i in range(VOXEL_TOTAL_R):
+			parcel = parcels[i]
+			parcel_func_ts[parcel] += vxl_func_ts[i]
 
-		''' FUNCTIONAL TIME SERIES '''
-		functional_ts_source = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_{1}.mat".format(subjectIDs[subject], hemisphere))
-		vxl_func_ts = np.array(functional_ts_source['dtseries1'])
+	# average parcel TS
+	for i in range(PARCEL_TOTAL):
+		if parcel_count[i][1] != 0:
+			parcel_func_ts[i] /= parcel_count[i][1]
 
-		# add voxels BOLD ts to parcel TS
-		parcel_func_ts = np.zeros((PARCEL_TOTAL, TS_LENGTH), dtype=np.float)
-		if hemisphere == "L":
-			for i in range(VOXEL_TOTAL_L):
-				parcel = parcels[i]
-				parcel_func_ts[parcel] += vxl_func_ts[i]
-		elif hemisphere == "R":
-			for i in range(VOXEL_TOTAL_R):
-				parcel = parcels[i]
-				parcel_func_ts[parcel] += vxl_func_ts[i]
-
-		# average parcel TS
-		for i in range(PARCEL_TOTAL):
-			if parcel_count[i][1] != 0:
-				parcel_func_ts[i] /= parcel_count[i][1]
-
+	return parcel_func_ts
 
 
 for subject in range(len(subjectIDs)):
