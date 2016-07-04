@@ -4,7 +4,7 @@ import numpy as np
 import csv
 
 
-VOXEL_TOTAL = 29696
+VOXEL_TOTAL_L = 29696
 VOXEL_TOTAL_R = 29716
 PARCEL_TOTAL = 76 #* 2
 TS_LENGTH = 2400
@@ -22,10 +22,7 @@ with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
 feature_vector = np.zeros((NUM_SUBJECTS,(PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)), dtype=np.float)
 
 
-def functional_parcellation_mapping(hemisphere):
-
-	for subject in range(1):#range(len(subjectIDs)):
-
+def functional_parcellation_mapping(subject, hemisphere):
 		''' DESTRIEUX PARCELLATION MAPPING '''
 		parcels_source = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_aparc_a2009s_{1}.mat".format(subjectIDs[subject], hemisphere))
 		parcels = np.array(parcels_source['aparc'])
@@ -47,9 +44,14 @@ def functional_parcellation_mapping(hemisphere):
 
 		# add voxels BOLD ts to parcel TS
 		parcel_func_ts = np.zeros((PARCEL_TOTAL, TS_LENGTH), dtype=np.float)
-		for i in range(VOXEL_TOTAL):
-			parcel = parcels[i]
-			parcel_func_ts[parcel] += vxl_func_ts[i]
+		if hemisphere == "L":
+			for i in range(VOXEL_TOTAL_L):
+				parcel = parcels[i]
+				parcel_func_ts[parcel] += vxl_func_ts[i]
+		elif hemisphere == "R":
+			for i in range(VOXEL_TOTAL_R):
+				parcel = parcels[i]
+				parcel_func_ts[parcel] += vxl_func_ts[i]
 
 		# average parcel TS
 		for i in range(PARCEL_TOTAL):
@@ -58,37 +60,38 @@ def functional_parcellation_mapping(hemisphere):
 
 
 
-left_parcellated_ts = functional_parcellation_mapping("left")
+for subject in range(len(subjectIDs)):
+	left_parcellated_ts = functional_parcellation_mapping(subject, "L")
+	right_parcellated_ts = functional_parcellation_mapping(subject, "R")
 
-# functional correlation matrix
-func_corr = np.corrcoef(left_parcellated_ts)
-func_corr = np.nan_to_num(func_corr)
-'''
-# extract upper right hand corner of correlation matrix
-for i in range((PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)):
-	for j in range(PARCEL_TOTAL):
-		for k in range(j+1, PARCEL_TOTAL):
-			feature_vector[subject][j] = func_corr[j][k]
-'''
-'''
-max_correl = -9999
-min_correl = 9999
-zero_count = 0
-for c in feature_vector[subject]:
-	if c == 0:
-		zero_count += 1
-	elif c > max_correl:
-		max_correl = c
-	elif c < min_correl:
-		min_correl = c
+	# functional correlation matrix
+	func_corr = np.corrcoef(left_parcellated_ts)
+	func_corr = np.nan_to_num(func_corr)
 
-print('FUNCTIONAL CORRELATION MATRIX: ' + str(subject))
-print("min: ", min_correl)
-print("max: ", max_correl)
-print("zeros: ", zero_count)
-print(func_corr)
-print('\n')
-'''
+	# extract upper right hand corner of correlation matrix
+	for i in range((PARCEL_TOTAL*(PARCEL_TOTAL-1)/2)):
+		for j in range(PARCEL_TOTAL):
+			for k in range(j+1, PARCEL_TOTAL):
+				feature_vector[subject][j] = func_corr[j][k]
+
+	max_correl = -9999
+	min_correl = 9999
+	zero_count = 0
+	for c in feature_vector[subject]:
+		if c == 0:
+			zero_count += 1
+		elif c > max_correl:
+			max_correl = c
+		elif c < min_correl:
+			min_correl = c
+
+	print('FUNCTIONAL CORRELATION MATRIX: ' + str(subject))
+	print("min: ", min_correl)
+	print("max: ", max_correl)
+	print("zeros: ", zero_count)
+	print(func_corr)
+	print('\n')
+
 
 print('FUNCTIONAL CORRELATION FEATURE VECTOR')
 print(type(feature_vector))
