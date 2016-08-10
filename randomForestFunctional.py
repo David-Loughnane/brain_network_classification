@@ -4,8 +4,7 @@ import math
 
 from memory_profiler import memory_usage
 import numpy as np
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import train_test_split
 from sklearn import metrics
 
@@ -31,21 +30,21 @@ print("Memory usage before: {}MB".format(memory_usage()))
 print("features: ", len(features_train))
 
 #### INSTANTIATE CLASSIFIER ####
-ABclassifier = AdaBoostClassifier(n_estimators=100, base_estimator=tree.DecisionTreeClassifier(criterion="entropy", min_samples_split=100, max_depth=20))
+clf = RandomForestClassifier(n_estimators=100)
 
 
 #### TRAIN #####
 t0 = time()
-ABclassifier.fit(features_train, labels_train)
+clf.fit(features_train, labels_train)
 t1 = time()
 print("Training time: {} seconds".format(round(t1-t0,3)))
 
 print("The 1st classifier used in the ensemble method is:")
-print(ABclassifier.estimators_[0])
+print(clf.estimators_[0])
 
 #### PREDICT ####
 t0 = time()
-predictions = ABclassifier.predict(features_test)
+predictions = clf.predict(features_test)
 t1 = time()
 
 print("Prediction time: {} seconds".format(round(t1-t0,3)))
