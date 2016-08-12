@@ -62,10 +62,10 @@ def functional_parcellation_mapping(subject, hemisphere):
 	return parcel_func_ts
 
 
-for subject in range(len(subjectIDs)):
-	left_parcellated_ts = functional_parcellation_mapping(subject, "L")
-    right_parcellated_ts = functional_parcellation_mapping(subject, "R")
-    whole_brain_ts = np.concatenate((left_parcellated_ts, right_parcellated_ts), axis=0) 
+for subject in range(1):##len(subjectIDs)):
+        left_parcellated_ts = functional_parcellation_mapping(subject, "L")
+        right_parcellated_ts = functional_parcellation_mapping(subject, "R")
+        whole_brain_ts = np.concatenate((left_parcellated_ts, right_parcellated_ts), axis=0) 
         
 	# functional correlation matrix
 	estimator = GraphLassoCV()
