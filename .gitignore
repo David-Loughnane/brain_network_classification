@@ -1,3 +1,4 @@
 venv/**
-functional_features_vector.txt
 networks/**
+nilearn_cache/**
+sandbox/**
