@@ -2,3 +2,4 @@ venv/**
 networks/**
 nilearn_cache/**
 sandbox/**
+results.xlsx
