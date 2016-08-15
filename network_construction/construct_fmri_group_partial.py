@@ -7,14 +7,14 @@ import csv
 
 VOXEL_TOTAL_L = 29696
 VOXEL_TOTAL_R = 29716
-HEMIS_PARCELS = 180
-BRAIN_PARCELS = HEMIS_PARCELS*2
+#HEMIS_PARCELS = 40
+BRAIN_PARCELS = 82#HEMIS_PARCELS*2
 TS_LENGTH = 2400
 NUM_SUBJECTS = 100
 
 
 FILE_PATH = "/vol/vipdata/data/HCP100/"
-#FILE_PATH_MAPPING = "/vol/medic02/users/sparisot/ClionProjects/openGm_maxflow/build/GrAverage1001/"
+FILE_PATH_MAPPING = "/vol/medic02/users/sparisot/ClionProjects/openGm_maxflow/build/GrAverage1001/"
 
 subjectIDs = []
 with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
@@ -28,6 +28,11 @@ def functional_parcellation_mapping(subject, hemisphere, parcels, parcel_count):
 	#### FUNCTIONAL TIME SERIES ####
 	functional_ts_source = scipy.io.loadmat(FILE_PATH + "{0}/processed/{0}_dtseries_fix_1_normalized_corrected_{1}.mat".format(subjectIDs[subject], hemisphere))
 	vxl_func_ts = np.array(functional_ts_source['dtseries1'])
+
+	if hemisphere == "L":
+		HEMIS_PARCELS = 40
+	else:
+		HEMIS_PARCELS = 42
 
 	# add voxels BOLD ts to parcel TS
 	parcel_func_ts = np.zeros((HEMIS_PARCELS, TS_LENGTH), dtype=np.float)
@@ -50,8 +55,10 @@ def functional_parcellation_mapping(subject, hemisphere, parcels, parcel_count):
 
 
 # LEFT #
-#### GLASSER PARCELLATION MAPPING ####
-parcels_source_L = scipy.io.loadmat(FILE_PATH + "thesis/group/GLASS/GLASS_PRO_PARCELs_{0}.mat".format('L'))
+#### GLASSER PARCELLATION MAPPING ###
+
+#parcels_source_L = scipy.io.loadmat(FILE_PATH + "thesis/group/GLASS/GLASS_PRO_PARCELs_{0}.mat".format('L'))
+parcels_source_L = scipy.io.loadmat(FILE_PATH + "thesis/group/AAL/AAL_PRO_PARCELs_{0}.mat".format('L'))
 parcels_L = np.array(parcels_source_L['PARCELs'][0][0][0][0][0])
 parcels_L = parcels_L.astype(int)
 parcels_L -= 1
@@ -68,20 +75,22 @@ parcels_L = parcels_L.astype(int)
 '''
 # number of voxels assigned to each parcel to calculate average
 parcel_count_list_L = []
-for i in range (HEMIS_PARCELS):
+for i in range(40):#(HEMIS_PARCELS):
     parcel_count_list_L.append([i,0])
 parcel_count_L = np.array(parcel_count_list_L)
 
 for row in parcels_L:
     parcel_count_L[row[0]][1] += 1
 
-# RIGHT #
-parcels_source_R = scipy.io.loadmat(FILE_PATH + "thesis/group/GLASS/GLASS_PRO_PARCELs_{0}.mat".format('R'))
+# GLASSER RIGHT #
+
+#parcels_source_R = scipy.io.loadmat(FILE_PATH + "thesis/group/GLASS/GLASS_PRO_PARCELs_{0}.mat".format('R'))
+parcels_source_R = scipy.io.loadmat(FILE_PATH + "thesis/group/AAL/AAL_PRO_PARCELs_{0}.mat".format('R'))
 parcels_R = np.array(parcels_source_R['PARCELs'][0][0][0][0][0])
 parcels_R = parcels_R.astype(int)
 parcels_R -= 1
 
-#### GRAMPA PARCELLATION MAPPING ####
+#### GRAMPA RIGHT ####
 '''
 parcel_list_R = []
 with open(FILE_PATH_MAPPING + "{0}/fmri_GrAverage1001_100_".format('R')) as f:
@@ -93,7 +102,7 @@ parcels_R = parcels_R.astype(int)
 '''
 # number of voxels assigned to each parcel to calculate average
 parcel_count_list_R = []
-for i in range (HEMIS_PARCELS):
+for i in range(42):#(HEMIS_PARCELS):
     parcel_count_list_R.append([i,0])
 parcel_count_R = np.array(parcel_count_list_R)
 
@@ -117,13 +126,17 @@ print 'Connectome computation complete'
 #print 'connectome'
 #print func_corr.shape
 
+'''
 for subject in range(NUM_SUBJECTS):
-	# extract upper right hand corner of correlation matrix
 	for i in range((BRAIN_PARCELS*(BRAIN_PARCELS-1)/2)):
 		for j in range(BRAIN_PARCELS):
 			for k in range(j+1, BRAIN_PARCELS):
 				feature_vector[subject][j] = func_corr[subject][j][k]
-
+'''
+for subject in range(NUM_SUBJECTS):
+#for subject in range(1):
+	feature_vector[subject] = func_corr[subject][np.triu_indices(BRAIN_PARCELS,1)]
+	'''
 	max_correl = -9999
 	min_correl = 9999
 	zero_count = 0
@@ -134,16 +147,17 @@ for subject in range(NUM_SUBJECTS):
 			max_correl = c
 		elif c < min_correl:
 			min_correl = c
-
+	'''
 	print('FUNCTIONAL CORRELATION MATRIX: ' + str(subject))
+	'''
 	print("min: ", min_correl)
 	print("max: ", max_correl)
 	print("zeros: ", zero_count)
 	print(func_corr[subject])
 	print('\n')
-
+	'''
 
 print('FUNCTIONAL CORRELATION FEATURE VECTOR')
 print(type(feature_vector))
 print(feature_vector.shape)
-np.savetxt('networks/fmri_glasser_partial.txt', feature_vector)
+np.savetxt('networks/fmri_aal_partial.txt', feature_vector)
