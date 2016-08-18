@@ -6,7 +6,8 @@ import math
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn imprt tree
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn import tree
 from sklearn import cross_validation
 from sklearn import metrics
 
@@ -29,8 +30,9 @@ def cv_classifier(input_features):
 	#print("Memory usage before: {}MB".format(memory_usage()))
 
 	#### INSTANTIATE CLASSIFIER ####
-	#clf = RandomForestClassifier(n_estimators=100)
-	clf = AdaBoostClassifier(n_estimators=100)
+	clf = RandomForestClassifier(n_estimators=100)
+	#clf = AdaBoostClassifier(n_estimators=100)
+	#clf = GradientBoostingClassifier(n_estimators=100)
 
 	#### CROSS VALIDATION ####
 	#t0 = time()
@@ -40,7 +42,8 @@ def cv_classifier(input_features):
 	print("Parcellation: ", input_features)
 	print("Size of feature vector: ", loaded_features.shape)
 	print("Scores: ", scores)
-	print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+	print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2)
+	print("Accuracy: {0}, Std Dev: {1}".format(round(scores.mean(),3), round(scores.std())))
 
 	#print("CV time: {} seconds".format(round(t1-t0,3)))
 	#print("Memory usage after: {}MB".format(memory_usage()))
