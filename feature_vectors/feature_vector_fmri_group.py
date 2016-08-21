@@ -13,7 +13,7 @@ FILE_PATH_MAPPING = "/vol/medic02/users/sparisot/ClionProjects/openGm_maxflow/bu
 
 VOXEL_TOTAL_L = 29696
 VOXEL_TOTAL_R = 29716
-HEMIS_PARCELS = 100
+HEMIS_PARCELS = 200
 BRAIN_PARCELS = HEMIS_PARCELS*2 #82
 TS_LENGTH = 2400
 NUM_SUBJECTS = 100
@@ -21,9 +21,9 @@ PARCELLATION = "GRAMPA"
 CORRELATION = "partial correlation"
 
 raw_feature_vector = np.zeros((NUM_SUBJECTS,(BRAIN_PARCELS*(BRAIN_PARCELS-1)/2)), dtype=np.float)
-bc_feature_vector = np.zeros((NUM_SUBJECTS,BRAIN_PARCELS), dtype=np.float)
-pr_feature_vector = np.zeros((NUM_SUBJECTS,BRAIN_PARCELS), dtype=np.float)
-evc_feature_vector = np.zeros((NUM_SUBJECTS,BRAIN_PARCELS), dtype=np.float)
+#bc_feature_vector = np.zeros((NUM_SUBJECTS,BRAIN_PARCELS), dtype=np.float)
+#pr_feature_vector = np.zeros((NUM_SUBJECTS,BRAIN_PARCELS), dtype=np.float)
+#evc_feature_vector = np.zeros((NUM_SUBJECTS,BRAIN_PARCELS), dtype=np.float)
 
 
 subjectIDs = []
@@ -119,7 +119,7 @@ for row in parcels_R:
 
 connectome_input = []
 for subject in range(len(subjectIDs)):
-#for subject in range(10):
+#for subject in range(1):
 	print subject, subjectIDs[subject]
 	left_parcellated_ts = functional_parcellation_mapping(subject, "L", parcels_L, parcel_count_L)
 	right_parcellated_ts = functional_parcellation_mapping(subject, "R", parcels_R, parcel_count_R)
@@ -137,7 +137,7 @@ print 'Connectome shape: ', func_corr.shape
 
 
 for subject in range(NUM_SUBJECTS):
-#for subject in range(10):
+#for subject in range(1):
 
 	#print 'SUBJECT ', subject 
 	time_0 = time()
@@ -147,25 +147,25 @@ for subject in range(NUM_SUBJECTS):
 
 	### CONSTRUCT GRAPH ###
 	#t0 = time()
-	G = nx.from_numpy_matrix(func_corr[subject])
+	#G = nx.from_numpy_matrix(func_corr[subject])
 	#t1 = time()
 	#print("Graph time: {} seconds".format(round(t1-t0,3)))
 	
 	### BETWEENESS CENTRALITY ###
 	#t0 = time()
-	bc_feature_vector[subject] = nx.betweenness_centrality(G, weight='weight').values()
+	#bc_feature_vector[subject] = nx.betweenness_centrality(G, weight='weight').values()
 	#t1 = time()
 	#print("BC time: {} seconds".format(round(t1-t0,3)))
 
 	### EIGENVECTOR CENTRALITY ###
 	#t0 = time()
-	evc_feature_vector[subject] = nx.eigenvector_centrality(G, weight='weight', max_iter=10000, tol=1e-05).values()
+	#evc_feature_vector[subject] = nx.eigenvector_centrality(G, weight='weight', max_iter=10000, tol=1e-05).values()
 	#t1 = time()
 	#print("EVC time: {} seconds".format(round(t1-t0,3)))
 	
 	### PAGERANK ###
 	#t0 = time()
-	pr_feature_vector[subject] = nx.pagerank(G, weight='weight', max_iter=10000, tol=1e-04).values()
+	#pr_feature_vector[subject] = nx.pagerank(G, weight='weight', max_iter=10000, tol=1e-04).values()
 	#t1 = time()
 	#print("PR time: {} seconds".format(round(t1-t0,3)))
 
@@ -173,14 +173,16 @@ for subject in range(NUM_SUBJECTS):
 
 print("Feature Vector construction time: {} seconds".format(round(time_1-time_0,3)))
 print 'raw: ', raw_feature_vector.shape
-print 'bc: ', bc_feature_vector.shape
-print 'evc: ', evc_feature_vector.shape
-print 'pr: ', pr_feature_vector.shape
+#print 'bc: ', bc_feature_vector.shape
+#print 'evc: ', evc_feature_vector.shape
+#print 'pr: ', pr_feature_vector.shape
 
-np.savetxt('data/partial/raw/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_raw.txt', raw_feature_vector)
-np.savetxt('data/partial/bc/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_bc.txt', bc_feature_vector)
-np.savetxt('data/partial/evc/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_evc.txt', evc_feature_vector)
-np.savetxt('data/partial/pr/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_pr.txt', pr_feature_vector)
+print 'saving text'
+np.savetxt('data/partial/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_raw.txt', raw_feature_vector)
+print 'text saved'
+#np.savetxt('data/partial/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_bc.txt', bc_feature_vector)
+#np.savetxt('data/partial/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_evc.txt', evc_feature_vector)
+#np.savetxt('data/partial/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_pr.txt', pr_feature_vector)
 
 
 

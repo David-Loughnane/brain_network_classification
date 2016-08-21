@@ -1,4 +1,5 @@
 venv/**
+feature_vectors/data/**
 network_construction/networks/**
 nilearn_cache/**
 sandbox/**
