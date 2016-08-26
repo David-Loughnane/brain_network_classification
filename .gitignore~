@@ -1,8 +1,0 @@
-venv/**
-feature_vectors/data/**
-network_construction/networks/**
-nilearn_cache/**
-sandbox/**
-results.xlsx
-*.txt
-feature_vectors/pySINGLE/**
