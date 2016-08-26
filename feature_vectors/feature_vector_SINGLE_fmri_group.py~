@@ -3,9 +3,11 @@ from time import time
 import scipy.io 
 from scipy.sparse import csgraph
 import numpy as np
+import pandas
 import networkx as nx
-import nilearn.connectome
+#import nilearn.connectome
 import csv
+from pySINGLE.SINGLE import SINGLE
 
 
 FILE_PATH = "/vol/vipdata/data/HCP100/"
@@ -14,10 +16,10 @@ FILE_PATH_MAPPING = "/vol/medic02/users/sparisot/ClionProjects/openGm_maxflow/bu
 
 VOXEL_TOTAL_L = 29696
 VOXEL_TOTAL_R = 29716
-HEMIS_PARCELS = 100
+HEMIS_PARCELS = 50
 BRAIN_PARCELS = HEMIS_PARCELS*2 #82
 TS_LENGTH = 2400
-NUM_SUBJECTS = 100
+NUM_SUBJECTS = 2
 PARCELLATION = "GRAMPA"
 CORRELATION = "partial correlation"
 
@@ -29,7 +31,7 @@ CORRELATION = "partial correlation"
 avg_feature_vector = np.zeros((NUM_SUBJECTS,BRAIN_PARCELS), dtype=np.float)
 hks_feature_vector = np.zeros((NUM_SUBJECTS,BRAIN_PARCELS), dtype=np.float)
 
-
+single_matrices = np.zeros((NUM_SUBJECTS, TS_LENGTH, BRAIN_PARCELS, BRAIN_PARCELS), dtype=np.float)
 
 subjectIDs = []
 with open(FILE_PATH + "subjectIDs100.txt", "r") as f:
@@ -123,16 +125,17 @@ for row in parcels_R:
 
 
 connectome_input = []
-for subject in range(len(subjectIDs)):
-#for subject in range(3):
+#for subject in range(len(subjectIDs)):
+for subject in range(2):
 	print subject, subjectIDs[subject]
 	left_parcellated_ts = functional_parcellation_mapping(subject, "L", parcels_L, parcel_count_L)
 	right_parcellated_ts = functional_parcellation_mapping(subject, "R", parcels_R, parcel_count_R)
 	whole_brain_ts = np.concatenate((left_parcellated_ts, right_parcellated_ts), axis=0).transpose()	
 	connectome_input.append(whole_brain_ts)
-#single_array = np.array(connectome_input)        
-#print single_array.shape
+single_array = np.array(connectome_input)        
+print single_array.shape
 
+'''
 # functional correlation matrix
 conn_measure = nilearn.connectome.ConnectivityMeasure(kind=CORRELATION)
 t0 = time()
@@ -141,10 +144,27 @@ t1 = time()
 print("Connectome time: {} seconds".format(round(t1-t0,3)))
 print 'Input vector shape: ', len(connectome_input), len(connectome_input[0]), len(connectome_input[0][0])
 print 'Connectome shape: ', func_corr.shape
+'''
 
+#for subject in range(NUM_SUBJECTS):
+for subject in range(2):
 
-for subject in range(NUM_SUBJECTS):
-	#for subject in range(3):
+	# establish instance of SINGLE class:
+	S = SINGLE(data=single_array[subject])
+
+	# estimate width of Gaussian kernel, h:
+	S.fit_radius(h_vals=[10,12.5, 15], samples=None)
+
+	# estimate sparsity and temporal homogeneity parameters:
+	S.tune_params()
+
+	# finally, we can fit the model according to the estimated parameters:
+	S.fit()
+	print 'subject', subject
+	print S.P
+	print S.P.shape
+
+	'''
     #func_corr[subject][func_corr[subject]<0] = 0
 	#print 'SUBJECT ', subject 
 	time_0 = time()
@@ -211,10 +231,9 @@ for subject in range(NUM_SUBJECTS):
 
 	#t1 = time()
 	#print("PR time: {} seconds".format(round(t1-t0,3)))
-
-
-
+    '''
 	time_1 = time()
+
 
 print("Feature Vector construction time: {} seconds".format(round(time_1-time_0,3)))
 #print 'raw: ', raw_feature_vector.shape

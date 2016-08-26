@@ -14,7 +14,7 @@ FILE_PATH_MAPPING = "/vol/medic02/users/sparisot/ClionProjects/openGm_maxflow/bu
 
 VOXEL_TOTAL_L = 29696
 VOXEL_TOTAL_R = 29716
-HEMIS_PARCELS = 100
+HEMIS_PARCELS = 200
 BRAIN_PARCELS = HEMIS_PARCELS*2 #82
 TS_LENGTH = 2400
 NUM_SUBJECTS = 100
@@ -123,8 +123,8 @@ for row in parcels_R:
 
 
 connectome_input = []
-for subject in range(len(subjectIDs)):
-#for subject in range(3):
+#for subject in range(len(subjectIDs)):
+for subject in range(3):
 	print subject, subjectIDs[subject]
 	left_parcellated_ts = functional_parcellation_mapping(subject, "L", parcels_L, parcel_count_L)
 	right_parcellated_ts = functional_parcellation_mapping(subject, "R", parcels_R, parcel_count_R)
@@ -142,7 +142,7 @@ print("Connectome time: {} seconds".format(round(t1-t0,3)))
 print 'Input vector shape: ', len(connectome_input), len(connectome_input[0]), len(connectome_input[0][0])
 print 'Connectome shape: ', func_corr.shape
 
-
+'''
 for subject in range(NUM_SUBJECTS):
 	#for subject in range(3):
     #func_corr[subject][func_corr[subject]<0] = 0
@@ -232,5 +232,5 @@ print 'saving text'
 np.savetxt('data/partial/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_avg.txt', avg_feature_vector)
 np.savetxt('data/partial/' + PARCELLATION + '_' + str(BRAIN_PARCELS) + '_partial_hks.txt', hks_feature_vector)
 print 'text saved'
-
+'''
 
