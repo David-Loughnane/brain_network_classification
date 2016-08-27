@@ -13,7 +13,7 @@ from sklearn import metrics
 
 
 orig_stdout = sys.stdout
-f = file('results_rand_forest_test.txt', 'w')
+f = file('results_rand_forest_final.txt', 'w')
 sys.stdout = f
 
 
