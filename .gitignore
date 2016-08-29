@@ -6,4 +6,4 @@ nilearn_cache/**
 sandbox/**
 results.xlsx
 *.txt
-
+*.png
