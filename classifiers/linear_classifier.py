@@ -42,16 +42,16 @@ def cv_classifier(input_features1, input_features2):
 	tuned_parameters = [{'penalty':['l1'], 'C' : [0.01, 0.1, 1, 10, 100, 1000] }]	
 
 	#### INSTANTIATE CLASSIFIER ####
-	#logr = linear_model.LogisticRegression() 	
+	#logr = linear_model.LogisticRegression(solver='sag') 	
 
-	clf = GridSearchCV(linear_model.LogisticRegression(), tuned_parameters, cv=5)
+	clf = GridSearchCV(linear_model.LogisticRegression(solver='sag'), tuned_parameters, cv=5)
 	clf.fit(features_train, labels_train)
 	predictions = clf.predict(features_test)
 
 	penalty_param = clf.best_params_['penalty']
 	regular_param = clf.best_params_['C']
 
-	clf2 = linear_model.LogisticRegression(penalty=penalty_param, C=regular_param)
+	clf2 = linear_model.LogisticRegression(penalty=penalty_param, C=regular_param, solver='sag')
 	scores = cross_validation.cross_val_score(clf2, loaded_features, labels, cv=5)
 	#print clf.best_params_
 
@@ -59,7 +59,7 @@ def cv_classifier(input_features1, input_features2):
 
 	#print("Memory usage after: {}MB".format(memory_usage()))
 
-	#clf3 = linear_model.LogisticRegression(penalty=penalty_param, C=regular_param)
+	#clf3 = linear_model.LogisticRegression(penalty=penalty_param, C=regular_param, solver='sag')
 	#clf3.fit(loaded_features, labels)
 	#print clf3.coef_    
 	

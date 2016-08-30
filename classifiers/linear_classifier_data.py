@@ -10,7 +10,7 @@ from sklearn import metrics
 NETWORKS_PATH = '/homes/dl4415/Documents/project/brain_network_classification/feature_vectors/data/partial/'
 
 orig_stdout = sys.stdout
-f = file('logistic_l1_sinlge_data.txt', 'w')
+f = file('logistic_l1_sinlge_data_lambda3.txt', 'w')
 sys.stdout = f
 
 
@@ -36,23 +36,24 @@ def cv_classifier(input_features1, input_features2, regular_param):
 
 	clf = linear_model.LogisticRegression(penalty='l1', C=regular_param)
 	scores = cross_validation.cross_val_score(clf, loaded_features, labels, cv=5)
-	non_zeros_coefs = np.count_nonzero(clf3.coef_)
+        clf.fit(features_train, labels_train)
+	non_zeros_coefs = np.count_nonzero(clf.coef_)
 	
 	return (round(scores.mean(),3)*100), non_zeros_coefs
 
     
-regular_params = [.01, .1, 1, 10, 100, 1000]
+regular_params = [.5, 2]
 for param in regular_params:
 	for dirName, subdirList, fileList in os.walk(NETWORKS_PATH):
 	        for i in range(len(fileList)):
-	                score, nonzeros_coefs = cv_classifier(param, os.path.join(dirName, fileList[i]), 9999)
+	                score, nonzeros_coefs = cv_classifier(os.path.join(dirName, fileList[i]), 9999, param)
 	                print param, fileList[i], 'N/A', score, nonzeros_coefs
 	                '''
 	                for dirName2, subdirList2, fileList2 in os.walk(NETWORKS_PATH):
 	                        for j in range(i+1, len(fileList2)):
 	                                if fileList[i] == fileList2[j]:
 	                                	continue
-	                                score, nonzeros_coefs = cv_classifier(param, os.path.join(dirName, fileList[i]), os.path.join(dirName, fileList2[j]))
+	                                score, nonzeros_coefs = cv_classifier(os.path.join(dirName, fileList[i]), os.path.join(dirName, fileList2[j]), param)
 	                                print param, fileList[i], fileList2[j], score, nonzeros_coefs
 	                '''
 
